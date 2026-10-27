@@ -67,6 +67,27 @@ npm je správca balíčkov pre JavaScript. Stiahne nástroje na frontend (Vite, 
 Vezme zdrojové štýly a skripty (resources/css, resources/js) a vytvorí z nich hotové súbory, ktoré načíta prehliadač. Bez tohto kroku stránka vyzerá nenaštýlovaná. Ak chceš pri úpravách vidieť zmeny hneď, použi namiesto toho npm run dev.
 
 
+## Databáza
+prednastavená je lokálna sql databáza. Ak chcete pracovat s mysql nastavte si lokálne v súbro .env (skrytý súbor) tieto hodnoty
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=city_bikes
+DB_USERNAME=root
+DB_PASSWORD=
+
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+```
+
+Test DB:
+``` php artisan config:clear``` zmaze nakešovany config subor a načita .env znova
+```php artisan tinker``` Laravel terminal
+```Schema::getTableListing()``` Laravel prikaz alternativne ```DB::select('show tables')``` SQL prikaz
+Ak dostanes zoznam tabuliek spojenie funguje.
+
 ## Nakoniec spusti aplikaciu lokalne v browseri
 http://zlty-bajk.test
 
