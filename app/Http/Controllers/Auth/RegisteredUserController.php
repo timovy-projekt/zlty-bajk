@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -20,7 +19,13 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $today = today();
+
+        return view('auth.register', [
+            'latestBirthDate' => $today->copy()->subYearsNoOverflow(RegisterRequest::MINIMUM_AGE)->toDateString(),
+            'adultBirthDate' => $today->copy()->subYearsNoOverflow(RegisterRequest::ADULT_AGE)->toDateString(),
+            'currentDate' => $today->toDateString(),
+        ]);
     }
 
     /**
@@ -28,19 +33,23 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(RegisterRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        $user = new User($request->safe()->only([
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+            'street_address',
+            'city',
+            'postal_code',
+            'date_of_birth',
+        ]));
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user->password_hash = Hash::make($request->validated('password'));
+        $user->role_id = User::ROLE_CUSTOMER;
+        $user->is_active = true;
+        $user->save();
 
         event(new Registered($user));
 

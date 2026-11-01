@@ -1,5 +1,6 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}"
+          x-data="registrationAge(@js(old('date_of_birth', '')), @js($adultBirthDate), @js($currentDate))">
 
         @csrf
 
@@ -72,78 +73,56 @@
             <div>
                 <x-input-label for="date_of_birth" value="Dátum narodenia"/>
                 <x-text-input id="date_of_birth" class="block mt-1 w-full" type="date" name="date_of_birth"
-                              :value="old('date_of_birth')" max="{{ now()->toDateString() }}" autocomplete="bday"
+                              :value="old('date_of_birth')" x-model="birthDate" max="{{ $latestBirthDate }}" autocomplete="bday"
                               required/>
                 <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2"/>
             </div>
 
             <!-- ID Card Number -->
 
-            {{--rozsirit beckend model/controller a  databazu od id_number --}}
+            {{--Ukladanie id_number doplniť po dohode na DB schéme.--}}
             <div>
                 <x-input-label for="id_number" value="číslo OP"/>
                 <x-text-input id="id_number" class="block mt-1 w-full" type="text" name="id_number"
-                              :value="old('id_number')" placeholder="AA123456"/>
+                              :value="old('id_number')" pattern="[A-Za-z]{2}[0-9]{6}" placeholder="AA123456"/>
                 <x-input-error :messages="$errors->get('id_number')" class="mt-2"/>
             </div>
 
-            @php
-                $hasIDCard = true; //kontroller musi zvalidovat datum narodenia a poslat do registracneho formularu kvoli zobrazeniu/nezobrazeniu
+            <!-- Legal Guardian (customers under 18) -->
+            <fieldset class="sm:col-span-2" x-show="needsGuardian" :disabled="!needsGuardian" style="display: none;">
+                <div
+                    class="border border-gray-200 dark:border-gray-700 rounded-md p-4 space-y-4 bg-gray-50 dark:bg-gray-800/50">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Ak je záujemca mladší ako 18 rokov, je potrebné uviesť údaje zákonného zástupcu.
+                    </p>
 
-            /*
-             public function store(Request $request)
-                    {
-                        $request->validate([
-                            'date_of_birth' => ['required', 'date', 'before:today'],
-                        ]);
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div>
+                            <x-input-label for="guardian_first_name" value="Meno zástupcu"/>
+                            <x-text-input id="guardian_first_name" class="block mt-1 w-full" type="text"
+                                          name="guardian_first_name" :value="old('guardian_first_name')"
+                                          x-bind:required="needsGuardian" autocomplete="off"/>
+                            <x-input-error :messages="$errors->get('guardian_first_name')" class="mt-2"/>
+                        </div>
 
-                        $vek = Carbon::parse($request->date_of_birth)->age;
+                        <div>
+                            <x-input-label for="guardian_last_name" value="Priezvisko zástupcu"/>
+                            <x-text-input id="guardian_last_name" class="block mt-1 w-full" type="text"
+                                          name="guardian_last_name" :value="old('guardian_last_name')"
+                                          x-bind:required="needsGuardian" autocomplete="off"/>
+                            <x-input-error :messages="$errors->get('guardian_last_name')" class="mt-2"/>
+                        </div>
 
-                        return view('formular', [
-                            'hasIDCard' => $age >= 15,
-                        ]);
-                    }
-             */
-            @endphp
-
-            @if($hasIDCard)
-
-                <!-- Legal Guardian (parent data required by participants under 15) -->
-                <div class="sm:col-span-2">
-                    <div
-                        class="border border-gray-200 dark:border-gray-700 rounded-md p-4 space-y-4 bg-gray-50 dark:bg-gray-800/50">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            Ak je záujemca mladší ako 15 rokov, je potrebné uviesť údaje zákonného zástupcu.
-                        </p>
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            <div>
-                                <x-input-label for="guardian_first_name" value="Meno zástupcu"/>
-                                <x-text-input id="guardian_first_name" class="block mt-1 w-full" type="text"
-                                              name="guardian_first_name" :value="old('guardian_first_name')"
-                                              autocomplete="off"/>
-                                <x-input-error :messages="$errors->get('guardian_first_name')" class="mt-2"/>
-                            </div>
-
-                            <div>
-                                <x-input-label for="guardian_last_name" value="Priezvisko zástupcu"/>
-                                <x-text-input id="guardian_last_name" class="block mt-1 w-full" type="text"
-                                              name="guardian_last_name" :value="old('guardian_last_name')"
-                                              autocomplete="off"/>
-                                <x-input-error :messages="$errors->get('guardian_last_name')" class="mt-2"/>
-                            </div>
-
-                            <div>
-                                <x-input-label for="guardian_id_number" value="Č. OP zástupcu"/>
-                                <x-text-input id="guardian_id_number" class="block mt-1 w-full" type="text"
-                                              name="guardian_id_number" :value="old('guardian_id_number')"
-                                              placeholder="AA123456" autocomplete="off"/>
-                                <x-input-error :messages="$errors->get('guardian_id_number')" class="mt-2"/>
-                            </div>
+                        <div>
+                            <x-input-label for="guardian_id_number" value="Č. OP zástupcu"/>
+                            <x-text-input id="guardian_id_number" class="block mt-1 w-full" type="text"
+                                          name="guardian_id_number" :value="old('guardian_id_number')"
+                                          x-bind:required="needsGuardian" pattern="[A-Za-z]{2}[0-9]{6}" placeholder="AA123456" autocomplete="off"/>
+                            <x-input-error :messages="$errors->get('guardian_id_number')" class="mt-2"/>
                         </div>
                     </div>
                 </div>
-            @endif
+            </fieldset>
         </div>
 
         {{--<h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 my-4">Prihlasovacie údaje</h2>--}}
