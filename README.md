@@ -12,7 +12,13 @@
 6.  **administrátorské rozhranie** s prístupom k všetkým dátam a dokumentom
 
 
-## Stiahni Laravel Herd 
+## Vetva `feature/backend-auth`
+
+Stručný stav registrácie/prihlasovania a úlohy pre DB/backend a frontend sú
+v [AUTH_HANDOFF.md](AUTH_HANDOFF.md). Lokálna verzia je otestovaná; hostovaná
+DB ešte vyžaduje uvedené úpravy.
+
+## Stiahni Laravel Herd
 https://herd.laravel.com/windows
 
 nástroj obsahuje všetko potrebné pre prácu s Laravel Frameworkom
