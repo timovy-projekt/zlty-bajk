@@ -19,7 +19,7 @@
 
 <header>
     <div class="wrap">
-        <a class="brand" href="{{ url('/') }}"><img src="{{ asset('img/logo.png') }}" alt="Logo">Bajkuj v meste</a>
+        <a class="brand" href="{{ url('/') }}"><img src="{{ asset('logo.png') }}" alt="Logo">Bajkuj v meste</a>
         <nav>
             <a href="{{ url('/') }}">Domov</a>
             <a href="{{ url('/') }}#postup">Ako to funguje</a>
@@ -29,7 +29,7 @@
         <div class="acts">
             <button class="theme" type="button" id="themeBtn" aria-label="Zmeniť tému">◐</button>
             <a class="btn" href="{{ route('login') }}">Prihlásiť sa</a>
-            <a class="btn pri" href="{{ route('register') }}">Registrovať sa</a>
+            <a class="btn pri" href="{{ route('registracia') }}">Registrovať sa</a>
         </div>
     </div>
 </header>

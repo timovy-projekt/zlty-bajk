@@ -5,7 +5,7 @@
     <section class="hero"><div class="wrap"><div><div class="eyebrow line">Trnava · Slovensko</div>
                 <h1>Požičaj si bicykel <em>v Trnave jednoducho</em> online</h1>
                 <p class="mut">Moderná platforma pre mestskú požičovňu bicyklov. Registrácia, rezervácia aj platba – všetko online, kdekoľvek a kedykoľvek.</p><br>
-                <a class="btn pri" href="{{ route('register') }}">Registrovať sa</a> <a class="btn lg" href="#postup">Zistiť viac</a>
+                <a class="btn pri" href="{{ route('registracia') }}">Registrovať sa</a> <a class="btn lg" href="#postup">Zistiť viac</a>
                 <div class="stats"><div><b>120+</b><small>bicyklov v meste</small></div><div><b>2 400+</b><small>registrovaných užívateľov</small></div><div><b>15 km</b><small>priemerná jazda</small></div></div></div>
             <img src="{{ asset('img/hero.jpg') }}" alt="Žena na bicykli v Trnave"></div></section>
 
