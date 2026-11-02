@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="sk"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bajkuj v meste</title><link rel="icon" href="img/logo.png"><link rel="stylesheet" href="css/style.css"><script src="js/theme.js"></script></head><body>
+<div class="demo">Prototyp – ukážka návrhu (údaje sú fiktívne)</div>
+<header><div class="wrap"><a class="brand" href="index.html"><img src="img/logo.png" alt="Logo">Bajkuj v meste</a>
+<nav><a href="index.html">Domov</a><a href="index.html#postup">Ako to funguje</a><a href="index.html#cennik">Cenník</a><a href="#kontakt">Kontakt</a><a href="admin.html">Admin</a></nav>
+<div class="acts"><button class="theme" title="Prepnúť režim"></button><a class="btn" href="admin.html">Prihlásiť sa</a><a class="btn pri" href="registracia.html">Registrovať sa</a></div></div></header>
+<section class="alt"><div class="wrap"><div class="form-card card">
+<div class="eyebrow line">Nový účet</div><h2>Registrácia <em>záujemcu</em></h2><p class="mut">Vyplň údaje, vyber typ bicykla a my ti ho po schválení pridelíme.</p><br>
+<div class="steps"><span class="on"></span><span class="on"></span><span></span></div>
+<form id="f"><div class="grid g2"><div><label>Meno *</label><input required></div><div><label>Priezvisko *</label><input required></div></div>
+<div class="grid g2"><div><label>E-mail *</label><input type="email" required></div><div><label>Telefón *</label><input type="tel" placeholder="+421" required></div></div>
+<label>Adresa trvalého pobytu *</label><input required placeholder="Ulica, číslo, PSČ, mesto">
+<div class="grid g2"><div><label>Dátum narodenia *</label><input type="date" required></div><div><label>Číslo OP *</label><input required></div></div>
+<div class="grid g2"><div><label>Typ bicykla</label><select><option>Mestský</option><option>Elektrobicykel</option><option>Trekingový</option></select></div>
+<div><label>Požadované obdobie</label><select><option>1 mesiac</option><option>3 mesiace</option><option>Sezóna (apríl – október)</option></select></div></div>
+<div class="grid g2"><div><label>Heslo *</label><input type="password" minlength="8" required></div><div><label>Heslo znova *</label><input type="password" minlength="8" required></div></div><br>
+<label class="chk"><input type="checkbox" required>Súhlasím so všeobecnými podmienkami požičovne.</label>
+<label class="chk"><input type="checkbox" required>Súhlasím so spracovaním osobných údajov (GDPR).</label><br>
+<button class="btn pri lg" style="width:100%">Odoslať registráciu</button></form>
+<div class="msg" id="ok">✅ <b>Ďakujeme!</b> Registrácia bola odoslaná. Na e-mail ti príde potvrdenie (v prototype sa nič neodosiela).</div>
+<p class="mut" style="text-align:center;margin-top:14px;font-size:.88rem">Už máš účet? <a href="admin.html" style="color:var(--y)">Prihlás sa</a></p>
+</div></div></section>
+<script>document.getElementById('f').onsubmit=e=>{e.preventDefault();e.target.style.display='none';document.getElementById('ok').style.display='block';}</script>
+<footer id="kontakt"><div class="wrap"><div><b>Bajkuj v meste</b><p>Mestská požičovňa bicyklov v Trnave.</p></div>
+<div><b>Kontakt</b><p>info@bajkujvmeste.sk<br>Trnava</p></div><div><b>Projekt</b><p><a href="../index.html">Projektová stránka tímu</a></p></div></div>
+<div class="copy">© 2026 Bajkuj v meste · Tímový projekt UCM FPV</div></footer></body></html>
