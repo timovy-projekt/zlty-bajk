@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
@@ -38,4 +39,34 @@ test('users can logout', function () {
 
     $this->assertGuest();
     $response->assertRedirect('/');
+});
+
+test('inactive accounts cannot log in', function (): void {
+    $user = User::factory()->create(['is_active' => false]);
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertSessionHasErrors('email');
+    $this->assertGuest();
+});
+
+test('users can request a remembered login', function (): void {
+    $user = User::factory()->create();
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+        'remember' => 'on',
+    ]);
+
+    $this->assertAuthenticatedAs($user);
+    $response->assertCookie(Auth::guard('web')->getRecallerName());
+    expect($user->refresh()->remember_token)->not->toBeEmpty();
+});
+
+test('guests must log in before viewing the dashboard', function (): void {
+    $this->get('/dashboard')->assertRedirect(route('login'));
 });
