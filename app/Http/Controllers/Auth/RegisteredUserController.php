@@ -46,7 +46,7 @@ class RegisteredUserController extends Controller
             'date_of_birth',
         ]));
 
-        $user->password_hash = Hash::make($request->validated('password'));
+        $user->password = $request->validated('password');
         $user->role_id = User::ROLE_CUSTOMER;
         $user->is_active = true;
         $user->save();

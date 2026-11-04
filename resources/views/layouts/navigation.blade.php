@@ -13,9 +13,17 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('dashboard', ['tab' => 'personal-details'])" :active="request()->routeIs('dashboard') && request('tab', 'personal-details') === 'personal-details'">
+                        Osobné údaje záujemcu
                     </x-nav-link>
+                    <x-nav-link :href="route('dashboard', ['tab' => 'documents'])" :active="request()->routeIs('dashboard') && request('tab') === 'documents'">
+                        Dokumenty
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('dashboard', ['tab' => 'rental'])" :active="request()->routeIs('dashboard') && request('tab') === 'rental'">
+                        Prenájom
+                    </x-nav-link>
+
                 </div>
             </div>
 
@@ -68,8 +76,11 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard', 'admin.dashboard')">
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('dashboard', ['tab' => 'personal-details'])" :active="request()->routeIs('dashboard') && request('tab', 'personal-details') === 'personal-details'">
+                Osobné údaje záujemcu
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard', ['tab' => 'documents'])" :active="request()->routeIs('dashboard') && request('tab') === 'documents'">
+                Dokumenty
             </x-responsive-nav-link>
         </div>
 

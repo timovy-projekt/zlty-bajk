@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+//use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -15,15 +15,15 @@ use Illuminate\Notifications\Notifiable;
     'first_name',
     'last_name',
     'email',
-    'password_hash',
+    'password',
     'phone',
     'street_address',
     'city',
     'postal_code',
     'date_of_birth',
 ])]
-#[Hidden(['password_hash', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail
+#[Hidden(['password', 'remember_token'])]
+class User extends Authenticatable //implements MustVerifyEmail
 {
     public const int ROLE_CUSTOMER = 1;
 
@@ -44,10 +44,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAuthPasswordName(): string
     {
-        return 'password_hash';
+        return 'password';
     }
 
-    /**
+/**
      * @return Attribute<string, never>
      */
     protected function name(): Attribute
@@ -67,7 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'date_of_birth' => 'date',
-            'password_hash' => 'hashed',
+            'password' => 'hashed',
             'is_active' => 'boolean',
             'role_id' => 'integer',
         ];
