@@ -1,23 +1,5 @@
 <x-app-layout>
-    @php
-        $profile = [
-            'first_name' => 'Ján',
-            'last_name' => 'Novák',
-            'email' => 'jan.novak@example.com',
-            'phone' => '+421 900 123 456',
-            'street_address' => 'J. Herdu 1',
-            'postal_code' => '917 01',
-            'city' => 'Trnava',
-            'date_of_birth' => '15. 5. 1998',
-            'id_number' => 'AA123456',
-            'member_since' => '1. 3. 2025',
-            'email_verified' => true,
-            'is_active' => true,
-        ];
-
-
-    @endphp
-
+  
     @php
 
         $activeTab = match(request('tab')) {
