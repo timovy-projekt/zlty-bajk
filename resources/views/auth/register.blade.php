@@ -90,6 +90,15 @@
                         Ak je záujemca mladší ako 18 rokov, je potrebné uviesť údaje zákonného zástupcu.
                     </p>
 
+
+                     <!-- Checkbox rovnaká adresa-->
+                    <label class="flex items-center gap-2 font-medium text-sm text-gray-700 dark:text-gray-300">
+                        <input type="checkbox" id="guardian_same_address" name="guardian_same_address" value="1"
+                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900"
+                            @checked(old('guardian_same_address'))>
+                        <span class="text-sm">Adresa zákonného zástupcu je rovnaká</span>
+                    </label>
+
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
                      <!--Guardian First Name-->
