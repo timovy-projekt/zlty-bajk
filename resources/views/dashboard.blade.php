@@ -75,7 +75,15 @@
                     description="Nájomná zmluva, VOP, GDPR"
                 >
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Dokumenty sa zobrazia na tomto mieste.
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+    <li class="flex items-center justify-between py-3">
+        <span class="text-gray-900 dark:text-gray-100">Nájomná zmluva</span>
+        <a href="{{ route('documents.rental') }}" target="_blank"
+           class="text-sm font-semibold text-brand-600 hover:text-brand-500">
+            Zobraziť PDF
+        </a>
+    </li>
+</ul>
                     </p>
                 </x-card>
             @endif
