@@ -53,7 +53,6 @@ class RegisterRequest extends FormRequest
             'id_number' => ['nullable', ...$idNumberRules],
             'guardian_first_name' => [Rule::excludeIf(! $requiresGuardian), 'required', 'string', 'max:100'],
             'guardian_last_name' => [Rule::excludeIf(! $requiresGuardian), 'required', 'string', 'max:100'],
-            'guardian_id_number' => [Rule::excludeIf(! $requiresGuardian), 'required', ...$idNumberRules],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'terms' => ['accepted'],
             'gdpr_consent' => ['accepted'],
@@ -66,7 +65,7 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'date_of_birth.before_or_equal' => 'Na registráciu musíte mať aspoň '.self::MINIMUM_AGE.' rokov.',
+            'date_of_birth.before_or_equal' => 'Na registráciu musíte mať aspoň ' . self::MINIMUM_AGE . ' rokov.',
             'id_number.size' => 'Číslo OP musí mať presne 8 znakov.',
             'id_number.regex' => 'Číslo OP musí obsahovať dve písmená a za nimi šesť číslic, napríklad AB123456.',
             'guardian_id_number.size' => 'Číslo OP zástupcu musí mať presne 8 znakov.',
