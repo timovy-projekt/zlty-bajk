@@ -21,7 +21,12 @@
 /storage/*.key
 /storage/pail
 /vendor
+/.local
+/ca.pem
 _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+ToDo.md
+/TODO.md
+/PRE_COMMIT_CHECKLIST.md
