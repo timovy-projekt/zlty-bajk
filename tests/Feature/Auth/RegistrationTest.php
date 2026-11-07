@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\UserGuardian;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -28,6 +29,8 @@ beforeEach(function (): void {
     $this->guardianData = [
         'guardian_first_name' => 'Guardian',
         'guardian_last_name' => 'Person',
+        'guardian_email' => 'guardian@example.com',
+        'guardian_date_of_birth' => '1980-01-01',
         'guardian_id_number' => 'AA123456',
     ];
 });
@@ -42,7 +45,7 @@ test('registration screen can be rendered', function (): void {
         ->assertSee('name="street_address"', false)
         ->assertSee('name="terms"', false)
         ->assertSee('name="gdpr_consent"', false)
-        ->assertSee('name="id_number"', false)
+        ->assertDontSee('name="id_number"', false)
         ->assertSee('name="guardian_first_name"', false)
         ->assertSee('x-show="needsGuardian"', false)
         ->assertViewHas('adultBirthDate', '2008-11-01')
@@ -72,8 +75,8 @@ test('new users can register with the agreed user schema', function (): void {
         ->and($user->role_id)->toBe(1)
         ->and($user->is_active)->toBeTrue()
         ->and($user->email_verified_at)->toBeNull()
-        ->and(Hash::check('password', $user->password_hash))->toBeTrue()
-        ->and($user->toArray())->not->toHaveKey('password_hash');
+        ->and(Hash::check('password', $user->password))->toBeTrue()
+        ->and($user->toArray())->not->toHaveKey('password');
 
     Notification::assertSentToOnce($user, VerifyEmail::class);
 
@@ -247,7 +250,7 @@ test('existing accounts can have no birth date', function (): void {
 test('minor registration requires all guardian fields even when browser validation is bypassed', function (string $birthDate): void {
     $this->post('/register', array_replace($this->registrationData, [
         'date_of_birth' => $birthDate,
-    ]))->assertSessionHasErrors(['guardian_first_name', 'guardian_last_name', 'guardian_id_number']);
+    ]))->assertSessionHasErrors(['guardian_first_name', 'guardian_last_name', 'guardian_email', 'guardian_date_of_birth']);
 
     $this->assertGuest();
     $this->assertDatabaseCount('users', 0);
@@ -269,7 +272,7 @@ test('minor registration rejects invalid guardian details', function (array $inv
 })->with([
     'empty first name' => [['guardian_first_name' => ''], 'guardian_first_name'],
     'empty last name' => [['guardian_last_name' => ''], 'guardian_last_name'],
-    'empty ID number' => [['guardian_id_number' => ''], 'guardian_id_number'],
+    'empty email' => [['guardian_email' => ''], 'guardian_email'],
     'first name is not text' => [['guardian_first_name' => ['Guardian']], 'guardian_first_name'],
     'last name is not text' => [['guardian_last_name' => ['Person']], 'guardian_last_name'],
     'ID number is not text' => [['guardian_id_number' => ['AA123456']], 'guardian_id_number'],
@@ -311,12 +314,12 @@ test('guardian details survive validation errors for a minor registration', func
     ]))->assertSessionHasErrors('password')
         ->assertSessionHasInput('guardian_first_name', 'Guardian')
         ->assertSessionHasInput('guardian_last_name', 'Person')
-        ->assertSessionHasInput('guardian_id_number', 'AA123456');
+        ->assertSessionHasInput('guardian_email', 'guardian@example.com');
 
     $this->get('/register')->assertOk()
         ->assertSee('value="Guardian"', false)
         ->assertSee('value="Person"', false)
-        ->assertSee('value="AA123456"', false);
+        ->assertSee('value="guardian@example.com"', false);
 });
 
 test('guardian requirement handles a leap-day eighteenth birthday', function (string $currentDate, bool $requiresGuardian): void {
@@ -327,7 +330,7 @@ test('guardian requirement handles a leap-day eighteenth birthday', function (st
     ]));
 
     if ($requiresGuardian) {
-        $response->assertSessionHasErrors(['guardian_first_name', 'guardian_last_name', 'guardian_id_number']);
+        $response->assertSessionHasErrors(['guardian_first_name', 'guardian_last_name', 'guardian_email', 'guardian_date_of_birth']);
         $this->assertGuest();
         $this->assertDatabaseCount('users', 0);
     } else {
@@ -347,9 +350,8 @@ test('registration accepts ID numbers with two letters followed by six digits', 
     ]))->assertSessionHasNoErrors()->assertRedirect(route('dashboard', absolute: false));
 
     $this->assertAuthenticated();
-    $attributes = User::sole()->getAttributes();
-    expect($attributes)->not->toHaveKey('id_number')
-        ->and($attributes)->not->toHaveKey('guardian_id_number');
+    expect(User::sole()->id_number)->toBe($idNumber)
+        ->and(UserGuardian::sole()->id_number)->toBe($idNumber);
 })->with(['AA123456', 'ab123456', 'aB987654']);
 
 test('registration rejects an invalid customer ID number when provided', function (mixed $idNumber): void {

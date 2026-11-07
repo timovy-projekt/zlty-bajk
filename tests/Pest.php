@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 /*
@@ -17,6 +19,31 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+pest()->beforeEach(function (): void {
+    if (config('database.default') !== 'sqlite') {
+        return;
+    }
+
+    Schema::table('users', function (Blueprint $table): void {
+        $table->string('id_number', 8)->nullable();
+    });
+
+    Schema::create('user_guardians', function (Blueprint $table): void {
+        $table->id();
+        $table->foreignId('user_id')->unique()->constrained('users')->restrictOnDelete()->restrictOnUpdate();
+        $table->string('first_name', 100);
+        $table->string('last_name', 100);
+        $table->string('email', 254);
+        $table->string('phone', 30)->nullable();
+        $table->string('street_address')->nullable();
+        $table->string('city', 100)->nullable();
+        $table->string('postal_code', 20)->nullable();
+        $table->date('date_of_birth');
+        $table->string('id_number', 8)->nullable();
+        $table->timestamps();
+    });
+})->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

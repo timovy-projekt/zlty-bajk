@@ -56,7 +56,8 @@ test('password can be reset with valid token', function () {
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('login'));
 
-        expect(Hash::check('new-password', $user->refresh()->password_hash))->toBeTrue();
+        expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue()
+            ->and(Hash::check('password', $user->password))->toBeFalse();
 
         return true;
     });

@@ -14,7 +14,7 @@ test('customers see their own dashboard', function (): void {
         ->get(route('dashboard'))
         ->assertOk()
         ->assertViewIs('dashboard')
-        ->assertSee('Customer dashboard');
+        ->assertSee($customer->first_name);
 });
 
 test('customers cannot open the administrator dashboard directly', function (): void {

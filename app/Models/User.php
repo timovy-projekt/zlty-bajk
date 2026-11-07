@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
-//use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -21,9 +22,10 @@ use Illuminate\Notifications\Notifiable;
     'city',
     'postal_code',
     'date_of_birth',
+    'id_number',
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable //implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     public const int ROLE_CUSTOMER = 1;
 
@@ -47,7 +49,15 @@ class User extends Authenticatable //implements MustVerifyEmail
         return 'password';
     }
 
-/**
+    /**
+     * @return HasOne<UserGuardian, $this>
+     */
+    public function guardian(): HasOne
+    {
+        return $this->hasOne(UserGuardian::class);
+    }
+
+    /**
      * @return Attribute<string, never>
      */
     protected function name(): Attribute
