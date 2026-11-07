@@ -219,7 +219,7 @@
             <input type="checkbox" name="terms" value="1" required
                 class="mt-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" />
             <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                Súhlasím s obchodnými podmienkami a <a href="#"
+                Súhlasím s obchodnými podmienkami a <a href="{{ route('documents.vop') }}" target="_blank" rel="noopener noreferrer"
                     class="underline text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300">VOP</a>. *
             </span>
         </label>
@@ -229,7 +229,7 @@
             <input type="checkbox" name="gdpr_consent" value="1" required
                 class="mt-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" />
             <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                Súhlasím so spracovaním osobných údajov podľa <a href="#"
+                Súhlasím so spracovaním osobných údajov podľa <a href="{{ route('documents.gdpr') }}" target="_blank" rel="noopener noreferrer"
                     class="underline text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300">GDPR</a>. *
             </span>
         </label>
