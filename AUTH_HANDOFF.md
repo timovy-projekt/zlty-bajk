@@ -1,40 +1,34 @@
 # Registrácia a prihlásenie – stav pre tím
 
-Vetva: `feature/backend-auth`. Otestované na lokálnej MySQL; hostovaná DB ešte
-vyžaduje nižšie uvedené úpravy.
+Vetva: `feature/backend-integration`. Obsahuje zlúčené zmeny kolegov a opravy backendu.
 
 ## Hotové
 
 - Registrácia, login/logout, zapamätanie prihlásenia, zmena a reset hesla.
 - Overenie e-mailu a zákaznícky/admin dashboard cez spoločný login.
-- Minimálny vek 15 rokov. Pri veku 15–17 sa zobrazujú a vyžadujú údaje zákonného zástupcu.
-- OP má formát 2 písmená A–Z/a–z a 6 číslic, napríklad `AB123456`. OP zákazníka je voliteľný; OP zástupcu je povinný pri veku 15–17.
+- Minimálny vek 15 rokov; pri veku 15–17 sa ukladá zákonný zástupca do `user_guardians`.
+- Zástupca musí mať meno, priezvisko, e-mail a dátum narodenia. Checkbox rovnakej adresy preberá adresu zákazníka.
+- OP zákazníka aj zástupcu je voliteľné. Backend ho validuje a ukladá, ak príde v požiadavke; aktuálny formulár nemá polia OP.
+- Formát OP: 2 písmená A–Z/a–z a 6 číslic, napríklad `AB123456`.
 - VOP/GDPR: vyžaduje sa zaškrtnutie oboch checkboxov, bez ukladania histórie.
+- VOP/GDPR PDF sú verejne dostupné z registrácie; nájomná zmluva vyžaduje prihlásenie a overený e-mail.
+- Heslo sa hashuje a ukladá do `users.password`. Zákazník a zástupca sa vytvárajú v jednej transakcii.
 
-Údaje zákonného zástupcu a číslo OP zákazníka sa zatiaľ **neukladajú**.
-E-maily sa lokálne zapisujú do `storage/logs/laravel.log`; pre doručovanie
-do schránok treba nastaviť e-mailovú službu.
+## Zostáva pre nasadenie
 
-## Čo treba dohodnúť s DB/backend kolegom
+- Na hostovanej DB zabezpečiť `user_guardians.date_of_birth DATE NOT NULL` podľa novej migrácie `2026_11_07_032019_require_date_of_birth_in_user_guardians_table.php`.
+- Ak existujú zástupcovia bez dátumu narodenia, najprv doplniť ich skutočné údaje; migrácia ich nevymýšľa a pri chýbajúcich dátumoch sa zastaví.
+- E-maily zostávajú v `storage/logs/laravel.log`; reálne doručovanie sa nastaví pri riešení hostingu.
+- Súbeh SQL inštalácie a Laravel migrácií ešte nie je zosúladený. Importované tabuľky a stĺpce sa nesmú vytvoriť druhýkrát.
 
-| Oblasť | Potrebná úprava |
-| --- | --- |
-| Heslo | Lokálne sa používa `password_hash`, hostovaná DB má `password`. Zjednotiť backend a lokálnu schému podľa dohodnutého názvu. |
-| Dátum narodenia | Na hostovanej DB doplniť `users.date_of_birth` typu `DATE`, nullable pre existujúce účty. |
-| Zákonný zástupca | Navrhnúť uloženie mena, priezviska, OP a vzťahu k zákazníkovi; potom doplniť zápis v backende. |
-| OP zákazníka | Doplniť miesto uloženia čísla OP s dĺžkou 8 znakov a následne zápis v backende. |
-| Reset hesla | Na hostovanej DB chýba `password_reset_tokens`; pripraviť ho pre funkciu obnovy hesla. |
+Pôvodné SQL skripty kolegu zostali bez zmien. Lokálna DB bola aktualizovaná so zachovaním existujúcich dát; do hostovanej DB sa nezapisovalo.
 
-Hostovaná DB bola skontrolovaná 1. 11. 2026 bez zmeny dát. `remember_token`
-už obsahuje; jeho pridanie preto pri integrácii nesmie prebehnúť druhýkrát.
+## Overenie
 
-## Pre frontend
-
-- Formuláre: `resources/views/auth/register.blade.php`, `login.blade.php`.
-- Backend validácia: `app/Http/Requests/Auth/RegisterRequest.php`, `LoginRequest.php`.
-- Zobrazovanie zástupcu: `resources/js/registration-age.js`.
-- Zachovať dohodnuté názvy polí; backend nastavuje rolu automaticky na `customer`.
-- Doplniť skutočné odkazy na VOP a GDPR namiesto `#`.
+- `php artisan test --compact`: 185 testov, 902 assertions, izolovaná SQLite.
+- `php artisan test --compact tests/LocalMysqlAuthenticationTest.php`: 3 scenáre, 132 assertions na lokálnej MySQL. Spúšťať výslovne len pre vývojovú `bajkuj_auth_local`; testy vracajú zápisy späť transakciou a neposielajú skutočné e-maily.
+- Pokryté sú registrácia dospelého/maloletého, adresy zástupcu, overenie e-mailu, login/logout, reset hesla, roly a prístup k dokumentom.
+- Používateľ manuálne potvrdil prihlásenie do existujúceho účtu; celý tok cez UI zatiaľ nie je manuálne overený.
 
 Ďalšia funkčná etapa: zákazník odošle **žiadosť o prenájom** a administrátor
 ju prijme alebo zamietne. Registrácia účtu nemá samostatné admin schvaľovanie.
