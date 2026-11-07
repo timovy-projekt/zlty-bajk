@@ -1,6 +1,6 @@
 # Registrácia a prihlásenie – stav pre tím
 
-Vetva: `feature/backend-integration`. Obsahuje zlúčené zmeny kolegov a opravy backendu.
+Vetva na review: `feature/backend-auth`. Obsahuje zlúčené zmeny kolegov a opravy backendu.
 
 ## Hotové
 
