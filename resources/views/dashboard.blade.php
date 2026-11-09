@@ -86,6 +86,17 @@
                                 class="text-sm font-semibold text-brand-600 dark:text-brand-500 hover:text-brand-500">Zobraziť
                                 PDF</a>
                         </li>
+                        @if (file_exists(public_path('payment-preview.pdf')))
+                            <li class="flex items-center justify-between py-3">
+                                <span class="text-gray-900 dark:text-gray-100">
+                                    Predpis úhrady
+                                    <span class="text-xs font-normal text-gray-500 dark:text-gray-400">(náhľad s ukážkovými údajmi)</span>
+                                </span>
+                                <a href="{{ asset('payment-preview.pdf') }}" target="_blank"
+                                    class="text-sm font-semibold text-brand-600 dark:text-brand-500 hover:text-brand-500">Zobraziť
+                                    PDF</a>
+                            </li>
+                        @endif
                     </ul>
                     </p>
                 </x-card>
