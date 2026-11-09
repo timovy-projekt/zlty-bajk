@@ -34,7 +34,7 @@
                     <x-detail-list :columns="2">
                         <x-detail-item label="Meno" :value="$profile['first_name']" />
                         <x-detail-item label="Priezvisko" :value="$profile['last_name']" />
-                        <x-detail-item label="Dátum narodenia" :value="$profile['date_of_birth']" />
+                        <x-detail-item label="Dátum narodenia" :value="$profile['date_of_birth']->format('d.m.Y')" />
                         <x-detail-item label="Číslo OP" :value="$profile['id_number']" />
 
                         <x-detail-item label="Email">
@@ -51,7 +51,7 @@
                         <x-detail-item label="Ulica, č. domu" :value="$profile['street_address']" />
                         <x-detail-item label="PSČ" :value="$profile['postal_code']" />
                         <x-detail-item label="Mesto" :value="$profile['city']" />
-                        <x-detail-item label="Registrovaný od" :value="$profile['member_since']" />
+                        <x-detail-item label="Registrovaný od" :value="$profile['created_at']->format('d.m.Y')" />
 
                         <x-detail-item label="Stav účtu">
                             <x-badge :type="$profile['is_active'] ? 'success' : 'neutral'">
