@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -55,6 +56,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function guardian(): HasOne
     {
         return $this->hasOne(UserGuardian::class);
+    }
+
+    /**
+     * @return HasMany<RentalApplication, $this>
+     */
+    public function rentalApplications(): HasMany
+    {
+        return $this->hasMany(RentalApplication::class);
     }
 
     /**

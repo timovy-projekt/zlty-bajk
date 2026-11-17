@@ -22,6 +22,10 @@ class EnsureAccountIsActive
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
+            if ($request->is('api/*') || $request->expectsJson()) {
+                abort(403, __('Your account is inactive.'));
+            }
+
             return redirect()->route('login')->with('status', __('Your account is inactive.'));
         }
 

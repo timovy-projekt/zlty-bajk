@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\BikeController;
+use App\Http\Controllers\Admin\RentalApplicationController as AdminRentalApplicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RentalApplicationController;
+use App\Models\RentalApplication;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,5 +32,25 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::prefix('api/v1')->name('api.v1.')
+    ->middleware(['auth', 'active', 'can:viewAny,'.RentalApplication::class])
+    ->group(function (): void {
+        Route::middleware('can:access-customer-dashboard')->group(function (): void {
+            Route::get('/rental-applications', [RentalApplicationController::class, 'index'])
+                ->name('rental-applications.index');
+            Route::get('/rental-applications/{rentalApplication}', [RentalApplicationController::class, 'show'])
+                ->whereNumber('rentalApplication')
+                ->name('rental-applications.show');
+        });
+
+        Route::prefix('admin')->name('admin.')->middleware('can:access-admin-dashboard')->group(function (): void {
+            Route::get('/rental-applications', [AdminRentalApplicationController::class, 'index'])
+                ->name('rental-applications.index');
+            Route::get('/rental-applications/{rentalApplication}', [AdminRentalApplicationController::class, 'show'])
+                ->whereNumber('rentalApplication')
+                ->name('rental-applications.show');
+        });
+    });
 
 require __DIR__.'/auth.php';
