@@ -146,6 +146,26 @@ test('tampered verification links cannot verify an email address', function (): 
     Event::assertNotDispatched(Verified::class);
 });
 
+test('a verification URL copied from raw email HTML must be decoded before opening it', function (): void {
+    $user = User::factory()->unverified()->create();
+    $mail = (new VerifyEmail)->toMail($user);
+
+    preg_match('/href="([^"]*\/verify-email\/[^"]+)"/', (string) $mail->render(), $matches);
+
+    expect($matches)->toHaveKey(1);
+    $encodedUrl = $matches[1];
+    expect($encodedUrl)->toContain('&amp;signature=');
+
+    $this->actingAs($user)->get($encodedUrl)->assertForbidden()->assertSee('Invalid signature.');
+    expect($user->fresh()->hasVerifiedEmail())->toBeFalse();
+
+    $plainUrl = html_entity_decode($encodedUrl, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    expect($plainUrl)->toBe($mail->actionUrl);
+
+    $this->get($plainUrl)->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+});
+
 test('a verification link cannot verify another account', function (): void {
     $owner = User::factory()->unverified()->create();
     $otherUser = User::factory()->unverified()->create();

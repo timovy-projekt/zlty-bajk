@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
@@ -37,28 +38,37 @@ test('reset password screen can be rendered', function () {
     });
 });
 
-test('password can be reset with valid token', function () {
+test('a password reset rejects the old password and accepts the new password', function (): void {
     Notification::fake();
 
     $user = User::factory()->create();
 
     $this->post('/forgot-password', ['email' => $user->email]);
 
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-        $response = $this->post('/reset-password', [
-            'token' => $notification->token,
-            'email' => $user->email,
-            'password' => 'new-password',
-            'password_confirmation' => 'new-password',
-        ]);
+    Notification::assertSentToOnce($user, ResetPassword::class);
+    $notification = Notification::sent($user, ResetPassword::class)->sole();
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route('login'));
+    $this->post('/reset-password', [
+        'token' => $notification->token,
+        'email' => $user->email,
+        'password' => 'new-password',
+        'password_confirmation' => 'new-password',
+    ])->assertSessionHasNoErrors()->assertRedirect(route('login'));
 
-        expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue()
-            ->and(Hash::check('password', $user->password))->toBeFalse();
+    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue()
+        ->and(Hash::check('password', $user->password))->toBeFalse();
 
-        return true;
-    });
+    Auth::forgetGuards();
+    $this->assertGuest();
+    $this->post(route('login'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertSessionHasErrors('email');
+    $this->assertGuest();
+
+    $this->post(route('login'), [
+        'email' => $user->email,
+        'password' => 'new-password',
+    ])->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));
+    $this->assertAuthenticatedAs($user);
 });

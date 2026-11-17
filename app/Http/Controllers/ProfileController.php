@@ -6,7 +6,6 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -39,7 +38,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Deactivate the user's account and end the current session.
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -49,12 +48,10 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        $user->is_active = false;
+        $user->save();
 
-        DB::transaction(function () use ($user): void {
-            $user->guardian()->delete();
-            $user->delete();
-        });
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
