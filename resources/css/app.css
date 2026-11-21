@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] {
+    display: none !important;
+}
+
 .sm\:col-span-2:has(#guardian_same_address:checked) .guardian-address {
     display: none;
 }

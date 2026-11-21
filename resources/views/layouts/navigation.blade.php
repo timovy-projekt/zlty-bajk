@@ -20,6 +20,9 @@
                         <x-nav-link :href="route('admin.bikes.index')" :active="request()->routeIs('admin.bikes.*')">
                             Bicykle
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.rental-applications.index')" :active="request()->routeIs('admin.rental-applications.*')">
+                            Žiadosti
+                        </x-nav-link>
                     @else
                         <x-nav-link :href="route('dashboard', ['tab' => 'personal-details'])" :active="request()->routeIs('dashboard') && request('tab', 'personal-details') === 'personal-details'">
                             Osobné údaje záujemcu
@@ -30,6 +33,9 @@
 
                         <x-nav-link :href="route('dashboard', ['tab' => 'rental'])" :active="request()->routeIs('dashboard') && request('tab') === 'rental'">
                             Prenájom
+                        </x-nav-link>
+                        <x-nav-link :href="route('dashboard', ['tab' => 'applications'])" :active="request()->routeIs('dashboard') && request('tab') === 'applications'">
+                            Moje žiadosti
                         </x-nav-link>
                     @endif
                 </div>
@@ -94,6 +100,9 @@
                 <x-responsive-nav-link :href="route('admin.bikes.index')" :active="request()->routeIs('admin.bikes.*')">
                     Bicykle
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.rental-applications.index')" :active="request()->routeIs('admin.rental-applications.*')">
+                    Žiadosti
+                </x-responsive-nav-link>
             @else
                 <x-responsive-nav-link :href="route('dashboard', ['tab' => 'personal-details'])" :active="request()->routeIs('dashboard') && request('tab', 'personal-details') === 'personal-details'">
                     Osobné údaje záujemcu
@@ -103,6 +112,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('dashboard', ['tab' => 'rental'])" :active="request()->routeIs('dashboard') && request('tab') === 'rental'">
                     Prenájom
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard', ['tab' => 'applications'])" :active="request()->routeIs('dashboard') && request('tab') === 'applications'">
+                    Moje žiadosti
                 </x-responsive-nav-link>
             @endif
         </div>

@@ -24,6 +24,9 @@ Route::middleware(['auth', 'active', 'verified'])->group(function (): void {
     Route::get('/admin/bikes', [BikeController::class, 'index'])
         ->middleware('can:access-admin-dashboard')
         ->name('admin.bikes.index');
+    Route::view('/admin/rental-applications', 'admin.rental-applications.index')
+        ->middleware('can:access-admin-dashboard')
+        ->name('admin.rental-applications.index');
     Route::get('/documents/rental-contract', [DocumentController::class, 'rentalContract'])->name('documents.rental');
 });
 

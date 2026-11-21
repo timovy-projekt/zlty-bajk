@@ -5,6 +5,7 @@
         $activeTab = match (request('tab')) {
             'documents' => 'documents',
             'rental' => 'rental',
+            'applications' => 'applications',
             default => 'personal-details',
         };
     @endphp
@@ -209,6 +210,14 @@
                 </x-card>
             @endif
 
+            @if ($activeTab === 'applications')
+                <div id="applications" class="space-y-2">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Moje žiadosti</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Prehľad vašich žiadostí o prenájom bicykla a ich stav.</p>
+                </div>
+
+                <x-rental-applications.list :endpoint="route('api.v1.rental-applications.index')" />
+            @endif
 
         </div>
     </div>
