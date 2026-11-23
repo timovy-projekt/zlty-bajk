@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -67,7 +68,7 @@ afterEach(function (): void {
     }
 });
 
-test('registration verification login and password reset work on local MySQL', function (string $birthDate, bool $hasGuardian, bool $sameAddress): void {
+test('registration password changes and account deactivation work on local MySQL', function (string $birthDate, bool $hasGuardian, bool $sameAddress): void {
     $email = 'bajkuj-mysql-'.bin2hex(random_bytes(8)).'@example.com';
     $data = [
         'first_name' => 'Local',
@@ -127,7 +128,31 @@ test('registration verification login and password reset work on local MySQL', f
     $this->post(route('login'), ['email' => $email, 'password' => 'test-password'])
         ->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));
     $this->assertAuthenticatedAs($user);
+
+    $this->from(route('profile.edit'))->put(route('password.update'), [
+        'current_password' => 'test-password',
+        'password' => 'profile-password',
+        'password_confirmation' => 'profile-password',
+    ])->assertSessionHasNoErrors()->assertRedirect(route('profile.edit'))
+        ->assertSessionHas('status', 'password-updated');
+
+    expect(Hash::check('profile-password', $user->fresh()->password))->toBeTrue()
+        ->and(Hash::check('test-password', $user->fresh()->password))->toBeFalse();
+
     $this->post(route('logout'))->assertRedirect('/');
+    Auth::forgetGuards();
+    $this->assertGuest();
+
+    $this->post(route('login'), ['email' => $email, 'password' => 'test-password'])
+        ->assertSessionHasErrors('email');
+    $this->assertGuest();
+
+    $this->post(route('login'), ['email' => $email, 'password' => 'profile-password'])
+        ->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));
+    $this->assertAuthenticatedAs($user);
+    $this->post(route('logout'))->assertRedirect('/');
+    Auth::forgetGuards();
+    $this->assertGuest();
 
     $this->post(route('password.email'), ['email' => $email])->assertSessionHasNoErrors();
     Notification::assertSentToOnce($user, ResetPassword::class);
@@ -140,14 +165,31 @@ test('registration verification login and password reset work on local MySQL', f
         'password_confirmation' => 'replacement-password',
     ])->assertSessionHasNoErrors()->assertRedirect(route('login'));
 
-    $this->post(route('login'), ['email' => $email, 'password' => 'test-password'])
-        ->assertSessionHasErrors('email');
-    $this->assertGuest();
+    foreach (['test-password', 'profile-password'] as $oldPassword) {
+        $this->post(route('login'), ['email' => $email, 'password' => $oldPassword])
+            ->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
 
     $this->post(route('login'), ['email' => $email, 'password' => 'replacement-password'])
         ->assertSessionHasNoErrors()->assertRedirect(route('dashboard'));
     $this->assertAuthenticatedAs($user);
     expect(Hash::check('replacement-password', $user->fresh()->password))->toBeTrue();
+
+    $guardianId = $user->guardian?->id;
+    $this->delete(route('profile.destroy'), [
+        'password' => 'replacement-password',
+    ])->assertSessionHasNoErrors()->assertRedirect('/');
+
+    Auth::forgetGuards();
+    $this->assertGuest();
+    expect($user->fresh()->is_active)->toBeFalse()
+        ->and($user->fresh()->email)->toBe($email)
+        ->and($user->fresh()->guardian?->id)->toBe($guardianId);
+
+    $this->post(route('login'), ['email' => $email, 'password' => 'replacement-password'])
+        ->assertSessionHasErrors('email');
+    $this->assertGuest();
 })->with([
     'adult customer' => ['2000-01-01', false, false],
     'minor with separate guardian address' => ['2010-11-07', true, false],

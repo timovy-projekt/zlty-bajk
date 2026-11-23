@@ -46,8 +46,9 @@ test('administrators use the same login and reach the administrator dashboard', 
 test('inactive accounts cannot access either dashboard with an existing session', function (int $roleId): void {
     $user = User::factory()->create(['role_id' => $roleId, 'is_active' => false]);
 
-    $this->actingAs($user)->get(route('dashboard'))->assertForbidden();
-    $this->get(route('admin.dashboard'))->assertForbidden();
+    $this->actingAs($user)->get(route('dashboard'))->assertRedirect(route('login'));
+    $this->assertGuest();
+    $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
 })->with([
     'customer' => [User::ROLE_CUSTOMER],
     'admin' => [User::ROLE_ADMIN],

@@ -200,20 +200,23 @@ test('registration rolls back the customer when the guardian cannot be saved', f
     }
 });
 
-test('account deletion removes its guardian before deleting the customer', function (): void {
+test('account deactivation preserves the customer and all guardian details', function (): void {
     $guardian = UserGuardian::factory()->create();
     $user = $guardian->user;
+    $guardianDetails = $guardian->fresh()->getAttributes();
 
     $this->actingAs($user)->delete('/profile', [
         'password' => 'password',
     ])->assertSessionHasNoErrors()->assertRedirect('/');
 
     $this->assertGuest();
-    $this->assertDatabaseCount('users', 0);
-    $this->assertDatabaseCount('user_guardians', 0);
+    $this->assertDatabaseCount('users', 1);
+    $this->assertDatabaseCount('user_guardians', 1);
+    expect($user->fresh()->is_active)->toBeFalse()
+        ->and($guardian->fresh()->getAttributes())->toBe($guardianDetails);
 });
 
-test('account deletion preserves both records when the password is incorrect', function (): void {
+test('account deactivation preserves both records when the password is incorrect', function (): void {
     $guardian = UserGuardian::factory()->create();
 
     $this->actingAs($guardian->user)->delete('/profile', [
@@ -222,13 +225,17 @@ test('account deletion preserves both records when the password is incorrect', f
 
     $this->assertDatabaseCount('users', 1);
     $this->assertDatabaseCount('user_guardians', 1);
+    expect($guardian->user->fresh()->is_active)->toBeTrue();
+    $this->assertAuthenticatedAs($guardian->user);
 });
 
-test('account deletion rolls back its guardian when the customer cannot be deleted', function (): void {
+test('failed deactivation preserves the active customer and guardian', function (): void {
     $guardian = UserGuardian::factory()->create();
 
-    User::deleting(function (): void {
-        throw new RuntimeException('Simulated customer delete failure.');
+    User::updating(function (User $user): void {
+        if ($user->isDirty('is_active')) {
+            throw new RuntimeException('Simulated customer deactivation failure.');
+        }
     });
 
     try {
@@ -238,6 +245,8 @@ test('account deletion rolls back its guardian when the customer cannot be delet
 
         $this->assertDatabaseCount('users', 1);
         $this->assertDatabaseCount('user_guardians', 1);
+        expect($guardian->user->fresh()->is_active)->toBeTrue();
+        $this->assertAuthenticatedAs($guardian->user);
     } finally {
         User::flushEventListeners();
     }
