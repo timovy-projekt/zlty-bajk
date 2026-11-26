@@ -162,11 +162,7 @@
                             </div>
                         </div>
 
-                        <form method="POST" action="#" class="space-y-6">
-                            @csrf
-                            <input type="hidden" name="start_date" value="{{ $rentalStartDate->toDateString() }}">
-                            <input type="hidden" name="end_date" value="{{ $rentalEndDate->toDateString() }}">
-
+                        <div class="space-y-6">
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div class="sm:col-span-2">
                                     <x-input-label for="bike_type" value="Typ bicykla" />
@@ -202,9 +198,13 @@
                             </div>
 
                             <div class="flex flex-wrap items-center gap-3">
-                                <x-primary-button type="button">Odoslať žiadosť</x-primary-button>
+                                <x-primary-button type="button" disabled aria-describedby="rental-submission-unavailable"
+                                    class="cursor-not-allowed opacity-50">Odoslať žiadosť</x-primary-button>
+                                <p id="rental-submission-unavailable" class="text-sm text-gray-600 dark:text-gray-400">
+                                    Odosielanie žiadostí zatiaľ nie je dostupné.
+                                </p>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </x-card>
             @endif
